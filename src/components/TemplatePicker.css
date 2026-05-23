@@ -1,0 +1,102 @@
+.template-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding: 0.95rem 1rem;
+  background-color: var(--color-cyan);
+  /* Secondary card — lighter border + shadow than the meme preview. */
+  border: 2px solid var(--color-ink);
+  border-radius: 12px;
+  box-shadow: 2px 2px 0 var(--color-ink);
+}
+
+.template-picker-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.template-picker-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: var(--color-ink);
+}
+
+.template-picker-hint {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.template-picker-list {
+  display: flex;
+  gap: 0.55rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-ink) transparent;
+}
+
+.template-picker-list::-webkit-scrollbar { height: 6px; }
+.template-picker-list::-webkit-scrollbar-thumb {
+  background-color: var(--color-ink);
+  border-radius: 999px;
+}
+
+.template-card {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+  width: 92px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.65rem 0.5rem;
+  background-color: var(--color-paper);
+  border: 2.5px solid var(--color-ink);
+  border-radius: var(--radius-sm);
+  box-shadow: 2px 2px 0 var(--color-ink);
+  cursor: pointer;
+  font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.15s, box-shadow 0.15s, background-color 0.15s;
+}
+
+.template-card:hover:not(.is-active) {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 var(--color-ink);
+}
+
+.template-card.is-active {
+  background-color: var(--color-yellow);
+  transform: translate(-2px, -2px);
+  box-shadow: 4px 4px 0 var(--color-ink);
+}
+
+.template-card-icon {
+  width: 50px;
+  height: 50px;
+  color: var(--color-ink);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.template-card-icon svg { width: 100%; height: 100%; }
+
+.template-card-name {
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: -0.005em;
+  text-transform: uppercase;
+  color: var(--color-ink);
+}

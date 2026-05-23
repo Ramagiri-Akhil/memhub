@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Pink rounded square (sticker base) with thick black outline -->
+  <rect x="3" y="3" width="26" height="26" rx="6"
+        fill="#ff4d8d"
+        stroke="#0a0a0c"
+        stroke-width="3"
+        stroke-linejoin="round" />
+  <!-- Yellow 4-pointed brand star (matches the doodles in the Hero panel) -->
+  <path d="M16 7L18 14L25 16L18 18L16 25L14 18L7 16L14 14Z"
+        fill="#fde047"
+        stroke="#0a0a0c"
+        stroke-width="2"
+        stroke-linejoin="round" />
+</svg>

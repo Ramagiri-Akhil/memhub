@@ -1,0 +1,119 @@
+.caption-inputs {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.95rem;
+  padding: 1rem;
+  background-color: var(--color-paper);
+  border: 2px solid var(--color-ink);
+  border-radius: 12px;
+  box-shadow: 2px 2px 0 var(--color-ink);
+}
+
+.caption-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.caption-label {
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--color-ink);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.caption-input {
+  width: 100%;
+  min-height: 48px;
+  padding: 0.75rem 0.95rem;
+  font-size: 1rem;
+  font-family: inherit;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  color: var(--color-ink);
+  background-color: var(--color-yellow-soft);
+  border: 2.5px solid var(--color-ink);
+  border-radius: var(--radius-sm);
+  outline: none;
+  box-shadow: 2px 2px 0 var(--color-ink);
+  transition: transform 0.15s, box-shadow 0.15s, background-color 0.15s;
+}
+
+.caption-input::placeholder {
+  color: var(--color-muted);
+  font-weight: 500;
+}
+
+.caption-input:hover {
+  background-color: var(--color-paper);
+}
+
+.caption-input:focus {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 var(--color-pink);
+  background-color: var(--color-paper);
+}
+
+/* ---------- Size slider row ---------- */
+
+.caption-size-row {
+  /* Grid (instead of flex) so label / slider / value have stable widths
+     across all caption fields — no more wobbly alignment. */
+  display: grid;
+  grid-template-columns: 38px 1fr 44px;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.caption-size-label {
+  font-family: var(--font-display);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.caption-size-value {
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink);
+  text-align: right;
+}
+
+.caption-slider {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 8px;
+  background: var(--color-yellow-soft);
+  border: 2px solid var(--color-ink);
+  border-radius: 999px;
+  outline: none;
+  cursor: pointer;
+}
+
+.caption-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--color-pink);
+  border: 2.5px solid var(--color-ink);
+  cursor: grab;
+  box-shadow: 2px 2px 0 var(--color-ink);
+}
+
+.caption-slider::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--color-pink);
+  border: 2.5px solid var(--color-ink);
+  cursor: grab;
+  box-shadow: 2px 2px 0 var(--color-ink);
+}

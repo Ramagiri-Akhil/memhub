@@ -1,0 +1,132 @@
+.upload-box {
+  position: relative;
+  width: 100%;
+  /* Shorter — was 220px. Less vertical real estate, still tap-friendly. */
+  min-height: 160px;
+  padding: 1.1rem 1rem;
+  background-color: var(--color-yellow);
+  border: 2.5px dashed var(--color-ink);
+  border-radius: 14px;
+  color: var(--color-ink);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 4px 4px 0 var(--color-ink);
+  transform: rotate(0.5deg);
+  transition: transform 0.18s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.18s cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.upload-box:hover {
+  transform: rotate(0) translate(-2px, -2px);
+  box-shadow: 7px 7px 0 var(--color-ink);
+}
+
+.upload-box:active {
+  transform: rotate(0) translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--color-ink);
+}
+
+.upload-box:focus-visible {
+  border-style: solid;
+  box-shadow: var(--shadow-md), 0 0 0 4px var(--color-pink);
+}
+
+.upload-box.is-dragging {
+  background-color: var(--color-pink);
+  color: var(--color-paper);
+  border-style: solid;
+  transform: rotate(-1deg);
+}
+
+.upload-box-input { display: none; }
+
+.upload-box-empty {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  pointer-events: none;
+}
+
+.upload-box-icon {
+  width: 48px;
+  height: 48px;
+  background-color: var(--color-paper);
+  border: 2px solid var(--color-ink);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.35rem;
+  box-shadow: 2px 2px 0 var(--color-ink);
+}
+
+.upload-box-icon svg { width: 26px; height: 26px; color: var(--color-ink); }
+
+.upload-box-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  text-transform: uppercase;
+  color: var(--color-ink);
+}
+
+.upload-box-subtitle {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--color-ink-soft);
+}
+
+.upload-box-link {
+  color: var(--color-ink);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+  font-weight: 700;
+}
+
+.upload-box-hint {
+  margin: 0.5rem 0 0;
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  color: var(--color-muted);
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.upload-box-error {
+  position: absolute;
+  bottom: 0.5rem;
+  left: 0; right: 0;
+  margin: 0;
+  text-align: center;
+  color: var(--color-red);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.upload-box.compact {
+  min-height: 84px;
+  padding: 0.85rem;
+  background-color: var(--color-paper);
+  transform: rotate(-0.5deg);
+}
+
+.upload-box.compact .upload-box-icon {
+  width: 38px;
+  height: 38px;
+  margin-bottom: 0;
+}
+.upload-box.compact .upload-box-icon svg { width: 20px; height: 20px; }
+.upload-box.compact .upload-box-title { font-size: 0.85rem; }
+.upload-box.compact .upload-box-hint { display: none; }

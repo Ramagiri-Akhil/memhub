@@ -1,0 +1,186 @@
+.home {
+  width: 100%;
+  padding: var(--space-6) 0 var(--space-16);
+  scroll-margin-top: 80px;
+}
+
+/* ============================================================
+   3-column grid on desktop. Asymmetrical weights so the center
+   meme preview dominates.
+   ============================================================ */
+
+.home-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.home-left,
+.home-center {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.home-right {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;          /* tighter — these cards are a tool group */
+  min-width: 0;
+}
+
+@media (min-width: 1100px) {
+  .home-grid {
+    /* Fixed sides + flexible center → preview gets the most space. */
+    grid-template-columns: 280px minmax(0, 1fr) 320px;
+    gap: 1.5rem;
+    align-items: start;
+  }
+  .home-left,
+  .home-right {
+    position: sticky;
+    top: 84px;
+  }
+}
+
+/* ============================================================
+   Empty state in the center column (before any image is uploaded)
+   ============================================================ */
+
+.home-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 0.7rem;
+  padding: 2.5rem 1.5rem;
+  background-color: var(--color-paper);
+  border: var(--border-thick) dashed var(--color-ink);
+  border-radius: var(--radius-lg);
+  min-height: 320px;
+}
+
+.home-empty-emoji {
+  font-size: 3rem;
+  filter: drop-shadow(2px 2px 0 var(--color-ink));
+  animation: home-empty-point 2s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@keyframes home-empty-point {
+  0%, 100% { transform: rotate(8deg); }
+  50%      { transform: rotate(20deg); }
+}
+
+.home-empty-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--color-ink);
+}
+
+.home-empty-text {
+  margin: 0;
+  max-width: 360px;
+  color: var(--color-ink-soft);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* ============================================================
+   Mood chip (shown above the preview when AI returns a mood)
+   ============================================================ */
+
+.home-mood-bar {
+  display: flex;
+  justify-content: center;
+}
+
+.home-mood-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.32rem 0.75rem;
+  font-family: var(--font-display);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-ink);
+  background-color: var(--color-yellow);
+  border: 2px solid var(--color-ink);
+  border-radius: 999px;
+  box-shadow: 2px 2px 0 var(--color-ink);
+  transform: rotate(-2deg);
+}
+
+.home-mood-chip-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: currentColor;
+  border: 1.5px solid var(--color-ink);
+}
+
+.home-mood-chip[data-mood="cinematic"]  { background-color: var(--color-yellow); }
+.home-mood-chip[data-mood="chaotic"]    { background-color: var(--color-pink); color: var(--color-paper); }
+.home-mood-chip[data-mood="wholesome"]  { background-color: var(--color-lime); }
+.home-mood-chip[data-mood="dark"]       { background-color: var(--color-ink); color: var(--color-paper); }
+.home-mood-chip[data-mood="funny"]      { background-color: var(--color-orange); }
+.home-mood-chip[data-mood="reaction"]   { background-color: var(--color-cyan); }
+
+/* ============================================================
+   Action buttons (Share / Download / Remove) — comic style
+   ============================================================ */
+
+.home-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.home-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  width: 100%;
+  min-height: 46px;
+  padding: 0.7rem 1.1rem;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+  text-transform: uppercase;
+  color: var(--color-ink);
+  border: 2px solid var(--color-ink);
+  border-radius: var(--radius-sm);
+  box-shadow: 3px 3px 0 var(--color-ink);
+  cursor: pointer;
+  transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.home-btn-download { background-color: var(--color-pink); color: var(--color-paper); }
+.home-btn-share    { background-color: var(--color-cyan); }
+.home-btn-remove   { background-color: var(--color-paper); }
+
+.home-btn:hover:not(:disabled) {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 var(--color-ink);
+}
+
+.home-btn:active:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--color-ink);
+}
+
+.home-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}

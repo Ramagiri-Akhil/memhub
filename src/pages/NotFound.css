@@ -1,0 +1,165 @@
+.not-found {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 200px);
+  padding: var(--space-8) var(--space-4);
+  isolation: isolate;
+}
+
+/* ---------- Scattered doodles ---------- */
+
+.not-found-doodle {
+  position: absolute;
+  width: clamp(38px, 6vw, 60px);
+  pointer-events: none;
+  z-index: 0;
+  animation: not-found-doodle-float 5s ease-in-out infinite;
+}
+
+.not-found-doodle-star    { top: 12%;  left: 10%;  --rot: -14deg;  animation-delay: 0s;   }
+.not-found-doodle-bolt    { top: 18%;  right: 12%; --rot:  10deg;  animation-delay: 1s;   }
+.not-found-doodle-sparkle { bottom: 18%;left: 14%; --rot:  -6deg;  animation-delay: 1.8s; }
+.not-found-doodle-burst   { bottom: 14%;right: 8%;  --rot:  12deg;  animation-delay: 0.6s; }
+
+.not-found-doodle {
+  transform: rotate(var(--rot));
+}
+
+@keyframes not-found-doodle-float {
+  0%, 100% { transform: rotate(var(--rot)) translateY(0); }
+  50%      { transform: rotate(var(--rot)) translateY(-8px); }
+}
+
+/* ---------- Main card ---------- */
+
+.not-found-card {
+  position: relative;
+  max-width: 520px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.85rem;
+  padding: 2rem 1.5rem 2.25rem;
+  background-color: var(--color-paper);
+  border: var(--border-thick) solid var(--color-ink);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  transform: rotate(-1deg);
+  z-index: 1;
+}
+
+.not-found-emoji {
+  font-size: 3rem;
+  filter: drop-shadow(3px 3px 0 var(--color-ink));
+}
+
+.not-found-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(4.5rem, 14vw, 7rem);
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  color: var(--color-pink);
+  -webkit-text-stroke: 3px var(--color-ink);
+  paint-order: stroke fill;
+  text-shadow: 5px 5px 0 var(--color-ink);
+}
+
+.not-found-tagline {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 3.5vw, 1.6rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: var(--color-ink);
+}
+
+.not-found-text {
+  margin: 0;
+  max-width: 380px;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: var(--color-ink-soft);
+}
+
+.not-found-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  min-height: 54px;
+  padding: 0.85rem 1.6rem;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: -0.005em;
+  text-transform: uppercase;
+  color: var(--color-paper);
+  background-color: var(--color-pink);
+  border: var(--border-thick) solid var(--color-ink);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+  text-decoration: none;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.not-found-cta:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 7px 7px 0 var(--color-ink);
+}
+
+.not-found-cta:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--color-ink);
+}
+
+.not-found-cta svg {
+  width: 18px;
+  height: 18px;
+  transition: transform 0.2s;
+}
+
+.not-found-cta:hover svg {
+  transform: translateX(3px);
+}
+
+/* ---------- Rubber-stamp sticker ---------- */
+
+.not-found-stamp {
+  position: absolute;
+  top: -22px;
+  right: -10px;
+  width: 86px;
+  height: 86px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-paper);
+  background-color: var(--color-ink);
+  border-radius: 50%;
+  box-shadow: 3px 3px 0 var(--color-yellow);
+  transform: rotate(15deg);
+  z-index: 2;
+}
+
+@media (max-width: 480px) {
+  .not-found-doodle-star    { top: 4%;  left: 4%;  }
+  .not-found-doodle-bolt    { top: 4%;  right: 4%; }
+  .not-found-doodle-sparkle { bottom: 4%; left: 4%; }
+  .not-found-doodle-burst   { bottom: 4%; right: 4%; }
+  .not-found-stamp { width: 72px; height: 72px; font-size: 0.65rem; }
+}

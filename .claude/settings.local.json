@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(npm run *)",
+      "PowerShell(npm install *)",
+      "PowerShell(Get-ChildItem -Path \".\", \"..\", \"..\\\\..\" -Directory -ErrorAction SilentlyContinue | Where-Object { $_.Name -match \"backend|server|api|express\" } | Select-Object FullName)",
+      "PowerShell(Get-ChildItem -Path \"backend\" -Force -Recurse -ErrorAction SilentlyContinue | Where-Object { $_.Name -notmatch \"node_modules\" } | Select-Object FullName, Mode | Select-Object -First 30)",
+      "PowerShell(Get-ChildItem -Path \"backend\" -Force -File | Where-Object { $_.Name -match \"^\\\\.env\" -or $_.Name -eq \"Server.js\" } | Select-Object Name, Length, LastWriteTime)",
+      "PowerShell(Get-ChildItem -Path \".\" -File -Recurse -ErrorAction SilentlyContinue | Where-Object { $_.Extension -match \"^\\\\.\\(png|jpg|jpeg|webp|gif\\)$\" -and $_.FullName -notmatch \"node_modules\" } | Select-Object Name, Length, DirectoryName)"
+    ]
+  }
+}

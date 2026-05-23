@@ -1,0 +1,147 @@
+.meme-preview {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  background-color: var(--color-paper);
+  border: 3px solid var(--color-ink);
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  /* Slightly stronger than secondary cards — this is the focal point. */
+  box-shadow: 6px 6px 0 var(--color-ink);
+  transform: rotate(-0.5deg);
+  isolation: isolate;
+}
+
+.meme-preview-image {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  /* Much taller — meme is the hero of the page. */
+  max-height: clamp(360px, 70vh, 640px);
+  object-fit: contain;
+}
+
+.meme-overlay {
+  position: absolute;
+  pointer-events: none;
+  z-index: 1;
+  animation: meme-overlay-in 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes meme-overlay-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.meme-overlay-banner-bottom {
+  left: 0; right: 0; bottom: 0;
+  height: 22%;
+  background-color: rgba(0, 0, 0, 0.88);
+}
+
+.meme-overlay-frame-black {
+  inset: 0;
+  box-shadow: inset 0 0 0 12px #000;
+}
+
+.meme-overlay-frame-black::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 18%;
+  background-color: #000;
+}
+
+.meme-overlay-cinematic-letterbox {
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.78) 0%,
+    rgba(0,0,0,0) 18%,
+    rgba(0,0,0,0) 82%,
+    rgba(0,0,0,0.78) 100%
+  );
+}
+
+/* ---------- Caption (draggable text on the meme) ---------- */
+
+.meme-caption {
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  z-index: 2;
+  text-wrap: balance;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  line-height: 1.02;
+  font-size: clamp(1.1rem, 6vw, 2.5rem);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grab;
+  touch-action: none;
+  transition:
+    filter 0.15s ease,
+    color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    text-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    -webkit-text-stroke-color 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    top 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    bottom 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: meme-caption-in 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes meme-caption-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.meme-caption:hover { filter: brightness(1.05); }
+.meme-caption:active { cursor: grabbing; }
+
+.meme-preview.is-readonly .meme-caption,
+.meme-preview.is-readonly .meme-sticker { cursor: default; }
+.meme-preview.is-readonly .meme-caption:hover { filter: none; }
+
+.meme-caption-top    { top: 3%; }
+.meme-caption-bottom { bottom: 3%; }
+
+/* ---------- Stickers ---------- */
+
+.meme-sticker {
+  position: absolute;
+  top: 35%;
+  left: 35%;
+  z-index: 2;
+  width: clamp(54px, 14vw, 90px);
+  height: clamp(54px, 14vw, 90px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  filter: drop-shadow(3px 3px 0 var(--color-ink));
+}
+
+.meme-sticker:active { cursor: grabbing; }
+.meme-sticker svg { width: 100%; height: 100%; }
+
+/* ---------- Selection ring (stripped before download) ---------- */
+
+.meme-caption.is-selected,
+.meme-sticker.is-selected {
+  outline: 3px dashed var(--color-pink);
+  outline-offset: 6px;
+}
+
+/* ---------- Mood-tinted border accent (subtle) ---------- */
+
+.meme-preview-mood-cinematic { box-shadow: 5px 5px 0 var(--color-yellow), 5px 5px 0 3px var(--color-ink); }
+.meme-preview-mood-chaotic   { box-shadow: 5px 5px 0 var(--color-pink),   5px 5px 0 3px var(--color-ink); }
+.meme-preview-mood-wholesome { box-shadow: 5px 5px 0 var(--color-lime),   5px 5px 0 3px var(--color-ink); }
+.meme-preview-mood-dark      { box-shadow: 5px 5px 0 var(--color-purple), 5px 5px 0 3px var(--color-ink); }
+.meme-preview-mood-funny     { box-shadow: 5px 5px 0 var(--color-orange), 5px 5px 0 3px var(--color-ink); }

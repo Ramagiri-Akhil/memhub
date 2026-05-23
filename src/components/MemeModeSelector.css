@@ -1,0 +1,39 @@
+.meme-mode-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.meme-mode-chip {
+  padding: 0.45rem 0.9rem;
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: -0.005em;
+  text-transform: uppercase;
+  color: var(--color-ink);
+  background-color: var(--color-paper);
+  border: 2.5px solid var(--color-ink);
+  border-radius: 999px;
+  box-shadow: 2px 2px 0 var(--color-ink);
+  cursor: pointer;
+  outline: none;
+  font-family: var(--font-display);
+  transition: transform 0.15s, box-shadow 0.15s, background-color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.meme-mode-chip:hover:not(.is-active) {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 var(--color-ink);
+}
+
+.meme-mode-chip.is-active {
+  background-color: var(--color-lime);
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 var(--color-ink);
+}
+
+.meme-mode-chip:focus-visible {
+  box-shadow: 2px 2px 0 var(--color-ink), 0 0 0 3px var(--color-pink);
+}

@@ -1,0 +1,157 @@
+.caption-gen {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 0.95rem 1rem;
+  background-color: var(--color-paper);
+  border: 2px solid var(--color-ink);
+  border-radius: 12px;
+  box-shadow: 2px 2px 0 var(--color-ink);
+}
+
+.caption-gen-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.caption-gen-title {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: var(--color-ink);
+}
+
+.caption-gen-icon {
+  display: inline-flex;
+  color: var(--color-pink);
+}
+
+.caption-gen-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 48px;
+  padding: 0.65rem 1.1rem;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: -0.005em;
+  text-transform: uppercase;
+  color: var(--color-paper);
+  background-color: var(--color-pink);
+  border: 2.5px solid var(--color-ink);
+  border-radius: var(--radius-sm);
+  box-shadow: 3px 3px 0 var(--color-ink);
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.caption-gen-btn:hover:not(:disabled) {
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0 var(--color-ink);
+}
+
+.caption-gen-btn:active:not(:disabled) {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--color-ink);
+}
+
+.caption-gen-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.caption-gen-hint {
+  margin: 0;
+  padding: 1rem;
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--color-ink-soft);
+  background-color: var(--color-yellow-soft);
+  border: 2.5px dashed var(--color-ink);
+  border-radius: var(--radius-sm);
+}
+
+/* ---------- Error state ---------- */
+
+.caption-gen-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.95rem;
+  background-color: #fee2e2;
+  border: 2.5px solid var(--color-red);
+  border-radius: var(--radius-sm);
+  box-shadow: 2px 2px 0 var(--color-red);
+}
+
+.caption-gen-error-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  color: var(--color-red);
+}
+
+.caption-gen-error-body { flex: 1; min-width: 0; }
+
+.caption-gen-error-title {
+  margin: 0 0 0.15rem;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--color-red);
+}
+
+.caption-gen-error-message {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--color-ink-soft);
+}
+
+.caption-gen-retry {
+  flex-shrink: 0;
+  min-height: 40px;
+  padding: 0.5rem 0.9rem;
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--color-paper);
+  background-color: var(--color-red);
+  border: 2.5px solid var(--color-ink);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+.caption-gen-retry:hover {
+  transform: translate(-1px, -1px);
+}
+
+@media (max-width: 480px) {
+  .caption-gen-error { flex-wrap: wrap; }
+  .caption-gen-retry { width: 100%; }
+}
+
+/* ---------- Grid of suggestion cards ---------- */
+
+.caption-gen-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.7rem;
+}
+
+.caption-gen-grid > :nth-child(1) { animation-delay: 0.04s; }
+.caption-gen-grid > :nth-child(2) { animation-delay: 0.12s; }
+.caption-gen-grid > :nth-child(3) { animation-delay: 0.20s; }
+.caption-gen-grid > :nth-child(4) { animation-delay: 0.28s; }
