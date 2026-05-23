@@ -6,7 +6,12 @@ const axios = require("axios");
 require("dotenv").config({ path: path.join(__dirname, ".env") });
 
 const app = express();
-app.use(cors());
+app.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "POST"],
+  })
+);
 app.use(express.json({ limit: "10mb" }));
 
 const PORT = 5000;
