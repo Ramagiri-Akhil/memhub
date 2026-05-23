@@ -1,7 +1,9 @@
 const path = require("path");
+const http = require("http");
 const express = require("express");
 const cors = require("cors");
 const axios = require("axios");
+const { Server: SocketIOServer } = require("socket.io");
 
 require("dotenv").config({ path: path.join(__dirname, ".env") });
 
@@ -240,7 +242,7 @@ async function generateRecipesFromAI(count, image, mode) {
       headers: {
         Authorization: `Bearer ${apiKey}`,
         "Content-Type": "application/json",
-        "HTTP-Referer": "http://localhost:5173",
+        "HTTP-Referer": "https://memhub-git-main-akhilramagiri3-gmailcoms-projects.vercel.app",
         "X-Title": "AI Meme Generator",
       },
       timeout: 45000,
@@ -254,8 +256,68 @@ async function generateRecipesFromAI(count, image, mode) {
   return parseAIResponse(text);
 }
 
+// =====================================================================
+// IN-MEMORY MEME + REACTIONS STORE (hackathon mode — no database yet)
+// =====================================================================
+
+// Map<memeId, { id, data, reactions }>
+const memes = new Map();
+
+const REACTION_EMOJIS = ["😂", "🔥", "💀", "😮", "🤯"];
+
+function createEmptyReactions() {
+  const reactions = {};
+  for (const emoji of REACTION_EMOJIS) {
+    reactions[emoji] = 0;
+  }
+  return reactions;
+}
+
+// Get the meme entry if it exists, otherwise create a blank one with
+// zeroed reactions. Used both by HTTP routes and socket handlers so they
+// always operate on the same record.
+function getOrCreateMeme(id) {
+  let meme = memes.get(id);
+  if (!meme) {
+    meme = { id, data: null, reactions: createEmptyReactions() };
+    memes.set(id, meme);
+  }
+  return meme;
+}
+
 app.get("/", (req, res) => {
-  res.json({ message: "Backend running 🚀" });
+  res.json({ message: "Backend running 🚀", memes: memes.size });
+});
+
+// Save meme data (called when the creator clicks Share Link).
+app.post("/memes", (req, res) => {
+  const { id, ...data } = req.body || {};
+  if (!id || typeof id !== "string") {
+    return res
+      .status(400)
+      .json({ success: false, message: "Missing meme id" });
+  }
+
+  const meme = getOrCreateMeme(id);
+  meme.data = data;
+
+  console.log(`Saved meme ${id}`);
+  res.json({ success: true, id });
+});
+
+// Load meme data + current reactions (called by MemeViewer on mount).
+app.get("/memes/:id", (req, res) => {
+  const meme = memes.get(req.params.id);
+  if (!meme || !meme.data) {
+    return res
+      .status(404)
+      .json({ success: false, message: "Meme not found" });
+  }
+  res.json({
+    success: true,
+    data: meme.data,
+    reactions: meme.reactions,
+  });
 });
 
 app.post("/generate-captions", async (req, res) => {
@@ -290,8 +352,77 @@ app.post("/generate-captions", async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+// =====================================================================
+// HTTP + Socket.IO server
+// =====================================================================
+
+const server = http.createServer(app);
+
+const io = new SocketIOServer(server, {
+  cors: { origin: "*", methods: ["GET", "POST"] },
+});
+
+// Count how many sockets are currently in a meme's room and broadcast it.
+function broadcastViewers(memeId) {
+  const room = io.sockets.adapter.rooms.get(memeId);
+  const count = room ? room.size : 0;
+  io.to(memeId).emit("viewers", { memeId, count });
+}
+
+io.on("connection", (socket) => {
+  // Client joins a meme room so it can receive live reaction updates.
+  socket.on("join", (memeId) => {
+    if (typeof memeId !== "string" || !memeId) return;
+
+    // If this socket was already watching a different meme, leave that
+    // room first and update its viewer count.
+    const previousMemeId = socket.data.memeId;
+    if (previousMemeId && previousMemeId !== memeId) {
+      socket.leave(previousMemeId);
+      broadcastViewers(previousMemeId);
+    }
+
+    socket.data.memeId = memeId;
+    const meme = getOrCreateMeme(memeId);
+    socket.join(memeId);
+
+    // Send the current counts to the newcomer immediately.
+    socket.emit("reactions", {
+      memeId,
+      reactions: meme.reactions,
+    });
+
+    // Update viewer count for everyone in the room (including newcomer).
+    broadcastViewers(memeId);
+  });
+
+  // Client clicked a reaction emoji.
+  socket.on("react", (payload) => {
+    if (!payload || typeof payload !== "object") return;
+    const { memeId, emoji } = payload;
+    if (typeof memeId !== "string" || !memeId) return;
+    if (!REACTION_EMOJIS.includes(emoji)) return;
+
+    const meme = getOrCreateMeme(memeId);
+    meme.reactions[emoji] = (meme.reactions[emoji] || 0) + 1;
+
+    // Broadcast the new counts to every viewer in that meme's room.
+    io.to(memeId).emit("reactions", {
+      memeId,
+      reactions: meme.reactions,
+    });
+  });
+
+  // When a socket disconnects, the room size drops by 1 — let everyone
+  // remaining in the room know.
+  socket.on("disconnect", () => {
+    const memeId = socket.data.memeId;
+    if (memeId) broadcastViewers(memeId);
+  });
+});
+
+server.listen(PORT, () => {
+  console.log(`Server + Socket.IO running on port ${PORT}`);
   console.log(
     `OpenRouter API key: ${process.env.OPENROUTER_API_KEY ? "loaded ✓" : "MISSING ✗ (check backend/.env)"}`
   );

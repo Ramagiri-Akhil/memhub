@@ -11,6 +11,7 @@ import TemplatePicker from '../components/TemplatePicker'
 import ReactionSimulator, {
   EMPTY_REACTIONS,
 } from '../components/ReactionSimulator'
+import AudienceIndicator from '../components/AudienceIndicator'
 import Toast from '../components/Toast'
 import { fileToBase64 } from '../utils/fileToBase64'
 import {
@@ -19,11 +20,17 @@ import {
 } from '../utils/textCustomization'
 import { createSticker } from '../utils/stickers'
 import { getTemplate, TEMPLATES } from '../utils/memeTemplates'
-import { saveMeme, loadMeme } from '../utils/memeStorage'
+import { api } from '../services/api'
+import { useMemeReactions } from '../hooks/useMemeReactions'
 import './Home.css'
 
 const DEFAULT_TEMPLATE_ID = 'classic'
 const DEFAULT_CAPTION_SIZE = 36
+
+// Canonical app URL used when generating shareable meme links so the copied
+// URL always points to the deployed app, even when generated from local dev.
+const SITE_URL =
+  'https://memhub-git-main-akhilramagiri3-gmailcoms-projects.vercel.app'
 
 // Tries the modern Clipboard API first; falls back to an off-screen
 // <textarea> + execCommand('copy') for older browsers / insecure contexts.
@@ -67,9 +74,17 @@ function Home() {
   const [stickers, setStickers] = useState([])
   const [selectedLayer, setSelectedLayer] = useState(null)
   const [templateId, setTemplateId] = useState(DEFAULT_TEMPLATE_ID)
-  const [reactions, setReactions] = useState(EMPTY_REACTIONS)
+  // Pre-share reactions are local (cosmetic). Once shared, the live hook
+  // takes over via `sharedMemeId`.
+  const [localReactions, setLocalReactions] = useState(EMPTY_REACTIONS)
+  const [sharedMemeId, setSharedMemeId] = useState(null)
+  const liveReactions = useMemeReactions(sharedMemeId)
+  const reactions = sharedMemeId ? liveReactions.reactions : localReactions
   const [isDownloading, setIsDownloading] = useState(false)
   const [toast, setToast] = useState(null)
+  // Incremented each time we want to shake the upload box. Used as a
+  // React `key` so the animation replays on every increment.
+  const [shakeCount, setShakeCount] = useState(0)
   const previewRef = useRef(null)
   const toastTimerRef = useRef(null)
 
@@ -77,6 +92,21 @@ function Home() {
     setToast(message)
     if (toastTimerRef.current) clearTimeout(toastTimerRef.current)
     toastTimerRef.current = setTimeout(() => setToast(null), 2500)
+  }
+
+  // Playful warnings rotated at random whenever the user tries to
+  // generate captions before uploading an image.
+  const NO_IMAGE_MESSAGES = [
+    '📸 Upload an image first, meme lord.',
+    '🚨 No image detected. Feed the AI something chaotic.',
+    '🤖 The AI is hungry. Toss it an image first.',
+  ]
+
+  function handleNoImageWarning() {
+    const msg =
+      NO_IMAGE_MESSAGES[Math.floor(Math.random() * NO_IMAGE_MESSAGES.length)]
+    showToast(msg)
+    setShakeCount((c) => c + 1)
   }
 
   useEffect(() => {
@@ -116,7 +146,8 @@ function Home() {
     setStickers([])
     setSelectedLayer(null)
     setTemplateId(DEFAULT_TEMPLATE_ID)
-    setReactions(EMPTY_REACTIONS)
+    setLocalReactions(EMPTY_REACTIONS)
+    setSharedMemeId(null)
   }
 
   function handleMoodChange(nextMood) {
@@ -124,8 +155,18 @@ function Home() {
     setTextCustom(getMoodPreset(nextMood))
   }
 
-  function handleReact(key) {
-    setReactions((prev) => ({ ...prev, [key]: (prev[key] || 0) + 1 }))
+  function handleReact(emoji) {
+    if (sharedMemeId) {
+      // Live mode — let the socket broadcast the click; counts update via
+      // the `reactions` event the server emits back.
+      liveReactions.react(emoji)
+    } else {
+      // Pre-share mode — purely local, just for visual feedback.
+      setLocalReactions((prev) => ({
+        ...prev,
+        [emoji]: (prev[emoji] || 0) + 1,
+      }))
+    }
   }
 
   function handleSelectLayer(kind, id) {
@@ -249,27 +290,26 @@ function Home() {
       templateId,
       mood,
       stickers,
-      reactions,
       createdAt: Date.now(),
     }
 
-    const saved = saveMeme(id, memeData)
-    if (!saved) {
-      showToast("Couldn't save — storage full")
+    try {
+      const res = await api.post('/memes', { id, ...memeData })
+      if (!res.data?.success) throw new Error('Server did not confirm save')
+    } catch (err) {
+      console.error('Save failed:', err)
+      showToast("Couldn't save meme to server")
       return
     }
 
-    // Verify the meme is actually retrievable before handing out a link.
-    const verify = loadMeme(id)
-    if (!verify || !verify.image) {
-      showToast("Couldn't save meme")
-      return
-    }
+    // Switch the editor's reactions over to live mode for this meme id —
+    // the creator can now watch reactions roll in below the preview.
+    setSharedMemeId(id)
 
-    const url = `${window.location.origin}/meme/${id}`
+    const url = `${SITE_URL}/meme/${id}`
     const copied = await copyToClipboard(url)
     if (copied) {
-      showToast('Link copied! Paste to share')
+      showToast('Link copied! Reactions are now live')
     } else {
       showToast('Link ready — copy from address bar')
     }
@@ -311,6 +351,8 @@ function Home() {
                   mood={mood || 'reaction'}
                   template={getTemplate(templateId)}
                 />
+
+                <AudienceIndicator count={liveReactions.viewerCount} />
 
                 <ReactionSimulator
                   counts={reactions}
@@ -358,10 +400,18 @@ function Home() {
           </div>
 
           <aside className="home-right">
-            <UploadBox
-              onFileSelected={handleFileSelected}
-              className={hasImage ? 'compact' : ''}
-            />
+            {/* Wrapper exists so we can replay the shake animation by
+                bumping the React key when the user clicks Generate
+                without an image. */}
+            <div
+              key={`upload-${shakeCount}`}
+              className={shakeCount > 0 ? 'upload-shake' : ''}
+            >
+              <UploadBox
+                onFileSelected={handleFileSelected}
+                className={hasImage ? 'compact' : ''}
+              />
+            </div>
 
             <TemplatePicker
               value={templateId}
@@ -372,6 +422,7 @@ function Home() {
               image={imageBase64}
               onApply={handleApplySuggestion}
               onMoodChange={handleMoodChange}
+              onValidationFail={handleNoImageWarning}
             />
 
             {hasImage && (

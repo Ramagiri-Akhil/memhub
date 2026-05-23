@@ -21,6 +21,24 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Shake wrapper — applied to a div around UploadBox when the user
+   clicks "Generate" without having uploaded anything yet. The wrapper
+   is re-mounted (via React key) so the animation replays on every
+   trigger; UploadBox's own resting rotate is preserved. */
+.upload-shake {
+  animation: upload-shake-wobble 0.55s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+
+@keyframes upload-shake-wobble {
+  0%, 100% { transform: translateX(0); }
+  15% { transform: translateX(-8px) rotate(-1.5deg); }
+  30% { transform: translateX(7px)  rotate(1.5deg); }
+  45% { transform: translateX(-5px) rotate(-1deg); }
+  60% { transform: translateX(5px)  rotate(1deg); }
+  75% { transform: translateX(-3px) rotate(-0.5deg); }
+  90% { transform: translateX(3px)  rotate(0.5deg); }
+}
+
 .upload-box:hover {
   transform: rotate(0) translate(-2px, -2px);
   box-shadow: 7px 7px 0 var(--color-ink);

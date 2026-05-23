@@ -7,14 +7,23 @@ import './CaptionGenerator.css'
 
 const MEME_MODES = ['Savage', 'Gen-Z', 'Dark Humor', 'Nerd', 'Cinematic']
 
-function CaptionGenerator({ onApply, onMoodChange, image }) {
+function CaptionGenerator({ onApply, onMoodChange, onValidationFail, image }) {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [suggestions, setSuggestions] = useState([])
   const [mode, setMode] = useState(MEME_MODES[0])
 
+  const isLocked = !image
+
   async function handleGenerate() {
     if (isLoading) return
+    // No image yet → bail out before any API call and let the parent
+    // surface a playful warning + shake the upload box.
+    if (isLocked) {
+      onValidationFail?.()
+      return
+    }
+
     setIsLoading(true)
     setError('')
     try {
@@ -47,11 +56,17 @@ function CaptionGenerator({ onApply, onMoodChange, image }) {
 
         <button
           type="button"
-          className="caption-gen-btn"
+          className={`caption-gen-btn ${isLocked ? 'is-locked' : ''}`}
           onClick={handleGenerate}
           disabled={isLoading}
+          aria-disabled={isLocked}
         >
           {isLoading ? 'Generating…' : 'Generate Funny Captions'}
+          {isLocked && !isLoading && (
+            <span className="caption-gen-btn-tooltip" aria-hidden="true">
+              Upload an image to unlock meme magic ✨
+            </span>
+          )}
         </button>
       </div>
 
