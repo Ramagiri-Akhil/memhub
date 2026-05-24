@@ -17,10 +17,13 @@ const groq = new Groq({
 const app = express();
 app.use(
   cors({
-    origin: "*",
+    origin: [
+      "http://localhost:5173",
+      "https://memhub-git-main-akhilramagiri3-gmailcoms-projects.vercel.app/",
+    ],
     methods: ["GET", "POST"],
   })
-);
+)
 app.use(express.json({ limit: "10mb" }));
 
 const PORT = 5000;

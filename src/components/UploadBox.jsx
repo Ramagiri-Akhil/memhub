@@ -43,6 +43,7 @@ function UploadBox({ onFileSelected, className = '' }) {
 
   return (
     <div
+      id="upload-section"
       className={`upload-box ${isDragging ? 'is-dragging' : ''} ${className}`.trim()}
       onClick={openPicker}
       onDragOver={handleDragOver}

@@ -2,7 +2,7 @@ import './Hero.css'
 
 function Hero() {
   return (
-    <section className="brand-panel">
+    <section id="hero" className="brand-panel">
       {/* Scattered doodles */}
       <svg
         className="brand-doodle brand-doodle-star"
@@ -73,7 +73,15 @@ function Hero() {
       </p>
 
       <div className="brand-ctas">
-        <a href="#upload" className="brand-cta brand-cta-primary">
+        <a href="#upload" className="brand-cta brand-cta-primary"
+        onClick={() => {
+    document
+      .getElementById('upload-section')
+      ?.scrollIntoView({
+        behavior: 'smooth',
+      })
+  }}
+        >
           Start Making
           <svg
             aria-hidden="true"
@@ -88,7 +96,13 @@ function Hero() {
             <polyline points="13 6 19 12 13 18" />
           </svg>
         </a>
-        <a href="#upload" className="brand-cta brand-cta-secondary">
+        <a href="#upload" className="brand-cta brand-cta-secondary" onClick={() => {
+    document
+      .getElementById('upload-section')
+      ?.scrollIntoView({
+        behavior: 'smooth',
+      })
+  }}>
           Browse Vibes
         </a>
       </div>

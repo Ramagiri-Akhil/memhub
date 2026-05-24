@@ -3,9 +3,15 @@ import './Navbar.css'
 
 function Navbar() {
   return (
-    <nav className="navbar">
-      <Link to="/" className="navbar-brand">
-        <span className="navbar-brand-mark" aria-hidden="true" />
+    <nav className="navbar"  >
+      <Link to="/" className="navbar-brand" onClick={() => {
+    document
+      .getElementById('hero')
+      ?.scrollIntoView({
+        behavior: 'smooth',
+      })
+  }}>
+        <span className="navbar-brand-mark"  aria-hidden="true" />
         AI Meme Hub
       </Link>
 
