@@ -1,11 +1,18 @@
+const sharp = require("sharp");
 const path = require("path");
 const http = require("http");
 const express = require("express");
 const cors = require("cors");
-const axios = require("axios");
 const { Server: SocketIOServer } = require("socket.io");
 
 require("dotenv").config({ path: path.join(__dirname, ".env") });
+
+const Groq = require("groq-sdk");
+
+const groq = new Groq({
+  apiKey: process.env.GROQ_API_KEY,
+});
+
 
 const app = express();
 app.use(
@@ -17,8 +24,7 @@ app.use(
 app.use(express.json({ limit: "10mb" }));
 
 const PORT = 5000;
-const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
-const MODEL = process.env.OPENROUTER_MODEL || "openai/gpt-4o-mini";
+
 
 const ALLOWED_MOODS = [
   "cinematic",
@@ -41,10 +47,19 @@ const ALLOWED_TEMPLATES = [
 const ALLOWED_FONTS = ["bowlby", "impact", "anton", "comic", "cinematic"];
 
 const SYSTEM_PROMPT =
-  "You are a meme art director. You generate complete meme recipes — each one with a template, captions, and visual style suggestions matched to the image (if provided) and the requested humor mode. " +
-  "You also classify the overall mood as one of: cinematic, chaotic, wholesome, dark, reaction, funny.";
+  "You are an expert meme creator. " +
+  "You understand Telugu memes, Hindi memes, Hyderabadi slang, Gen-Z humor, savage memes, dark humor, cinematic memes and Indian internet culture. " +
+  "Analyze uploaded images carefully and generate highly funny meme captions matching the image context naturally.";
 
 const MODE_INSTRUCTIONS = {
+  Hyderabad:
+  "Use Hyderabadi slang, biryani jokes, local Hyderabad meme style and funny expressions.",
+
+Telugu:
+  "Generate Telugu meme captions using Telugu meme culture, dialogues like 'entra idi', 'rey', 'ayyoo', 'mass'.",
+
+Hindi:
+  "Generate Hindi meme captions using Bollywood humor, Indian relatable jokes and desi sarcasm.",
   Savage:
     "Style: SAVAGE. Be brutal, roast-style, biting. Cutting honesty with no mercy.",
   "Gen-Z":
@@ -221,41 +236,70 @@ function buildUserMessage(count, image, mode) {
   return { role: "user", content: text };
 }
 
-async function generateRecipesFromAI(count, image, mode) {
-  const apiKey = process.env.OPENROUTER_API_KEY;
-  if (!apiKey) {
-    throw new Error("Missing OPENROUTER_API_KEY in .env file.");
-  }
+async function uploadImageToImgbb(base64Image) {
+  const base64Data = base64Image.includes(",")
+    ? base64Image.split(",")[1]
+    : base64Image;
 
-  const response = await axios.post(
-    OPENROUTER_URL,
-    {
-      model: MODEL,
-      messages: [
-        { role: "system", content: SYSTEM_PROMPT },
-        buildUserMessage(count, image, mode),
-      ],
-      temperature: 0.9,
-      max_tokens: 800,
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-        "HTTP-Referer": "https://memhub-git-main-akhilramagiri3-gmailcoms-projects.vercel.app",
-        "X-Title": "AI Meme Generator",
-      },
-      timeout: 45000,
-    }
-  );
+  // Convert to JPEG regardless of input format (avif, webp, png, etc.)
+  const inputBuffer = Buffer.from(base64Data, "base64");
+  const jpegBuffer = await sharp(inputBuffer).jpeg({ quality: 90 }).toBuffer();
+  const jpegBase64 = jpegBuffer.toString("base64");
 
-  const text = response.data?.choices?.[0]?.message?.content;
-  if (!text) {
-    throw new Error("AI response was empty.");
-  }
-  return parseAIResponse(text);
+  const params = new URLSearchParams();
+  params.append("key", process.env.IMGBB_API_KEY);
+  params.append("image", jpegBase64);
+
+  const response = await fetch("https://api.imgbb.com/1/upload", {
+    method: "POST",
+    body: params,
+  });
+
+  const data = await response.json();
+  if (!data.success) throw new Error("imgbb upload failed: " + JSON.stringify(data));
+  return data.data.url;
 }
 
+async function generateRecipesFromAI(count, image, mode) {
+  if (!process.env.GROQ_API_KEY) throw new Error("Missing GROQ_API_KEY");
+
+  const textPrompt =
+    buildUserPrompt(count, Boolean(image), mode) +
+    `\n\nIMPORTANT — Indian meme culture rules:
+- Reference real Indian situations: UPSC grind, engineering college, board exams,
+  Indian parents, jugaad, "log kya kahenge", chai, arranged marriage, power cuts,
+  cricket wins/losses, Bollywood dialogues, auto-rickshaw bargaining, hostel mess food.
+- Use Hinglish naturally: "bhai", "yaar", "arre", "bas kar", "kya scene hai",
+  "thoda adjust karo", "chill maar", "bindaas", "ekdum mast".
+- Telugu/Hyderabadi flavour: "entra", "rey", "ayyoo", "babu", "mass", "pataas".
+- Feel like real Indian meme pages: Sarcasm, Being Indian, Subtle Curry Traits.
+- Avoid generic western meme formats. Make it hurt or heal like only desi memes can.`;
+
+  let userContent;
+
+  if (image) {
+    const imageUrl = await uploadImageToImgbb(image);
+    console.log("Image uploaded to imgbb:", imageUrl);
+    userContent = [
+      { type: "text", text: textPrompt },
+      { type: "image_url", image_url: { url: imageUrl } },
+    ];
+  } else {
+    userContent = textPrompt;
+  }
+
+  const completion = await groq.chat.completions.create({
+    model: "meta-llama/llama-4-scout-17b-16e-instruct",
+    messages: [
+      { role: "system", content: SYSTEM_PROMPT },
+      { role: "user", content: userContent },
+    ],
+    temperature: 1,
+  });
+
+  const text = completion.choices[0].message.content;
+  return parseAIResponse(text);
+}
 // =====================================================================
 // IN-MEMORY MEME + REACTIONS STORE (hackathon mode — no database yet)
 // =====================================================================
@@ -423,8 +467,5 @@ io.on("connection", (socket) => {
 
 server.listen(PORT, () => {
   console.log(`Server + Socket.IO running on port ${PORT}`);
-  console.log(
-    `OpenRouter API key: ${process.env.OPENROUTER_API_KEY ? "loaded ✓" : "MISSING ✗ (check backend/.env)"}`
-  );
-  console.log(`OpenRouter model:   ${MODEL}`);
+
 });
