@@ -19,7 +19,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://memhub-git-main-akhilramagiri3-gmailcoms-projects.vercel.app",
+      "https://memhub-two.vercel.app",
     ],
     methods: ["GET", "POST"],
   })
@@ -683,7 +683,7 @@ const io = new SocketIOServer(server, {
   cors: {
     origin: [
       "http://localhost:5173",
-      "https://memhub-git-main-akhilramagiri3-gmailcoms-projects.vercel.app",
+      "https://memhub-two.vercel.app",
     ],
     methods: ["GET", "POST"],
   },
