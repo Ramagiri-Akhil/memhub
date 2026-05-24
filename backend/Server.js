@@ -19,14 +19,17 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://memhub-git-main-akhilramagiri3-gmailcoms-projects.vercel.app/",
+      "https://memhub-git-main-akhilramagiri3-gmailcoms-projects.vercel.app",
     ],
     methods: ["GET", "POST"],
   })
 )
+
+
+
 app.use(express.json({ limit: "10mb" }));
 
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
 
 const ALLOWED_MOODS = [
@@ -677,7 +680,13 @@ app.post("/generate-captions", async (req, res) => {
 const server = http.createServer(app);
 
 const io = new SocketIOServer(server, {
-  cors: { origin: "*", methods: ["GET", "POST"] },
+  cors: {
+    origin: [
+      "http://localhost:5173",
+      "https://memhub-git-main-akhilramagiri3-gmailcoms-projects.vercel.app",
+    ],
+    methods: ["GET", "POST"],
+  },
 });
 
 function broadcastViewers(memeId) {
