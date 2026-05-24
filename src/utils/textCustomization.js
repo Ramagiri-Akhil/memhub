@@ -5,7 +5,6 @@ export const FONT_FAMILIES = {
   bowlby: '"Bowlby One", "Anton", Impact, "Arial Black", sans-serif',
   impact: 'Impact, "Anton", "Arial Black", sans-serif',
   anton: '"Anton", Impact, "Arial Black", sans-serif',
-  comic: '"Comic Sans MS", "Chalkboard SE", "Comic Neue", cursive',
   cinematic: '"Bricolage Grotesque", Georgia, "Times New Roman", serif',
 }
 

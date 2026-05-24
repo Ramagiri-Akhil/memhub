@@ -4,7 +4,6 @@ const FONT_OPTIONS = [
   { key: 'bowlby', label: 'Bowlby' },
   { key: 'impact', label: 'Impact' },
   { key: 'anton', label: 'Anton' },
-  { key: 'comic', label: 'Comic' },
   { key: 'cinematic', label: 'Cinematic' },
 ]
 

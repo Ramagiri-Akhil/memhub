@@ -9,6 +9,8 @@
   box-shadow: 2px 2px 0 var(--color-ink);
 }
 
+/* ---------- Header ---------- */
+
 .caption-gen-header {
   display: flex;
   align-items: center;
@@ -35,6 +37,105 @@
   color: var(--color-pink);
 }
 
+/* ---------- Steps ---------- */
+
+.caption-gen-step {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Slide-down reveal animation for step 2 and button */
+.caption-gen-step--reveal {
+  animation: stepReveal 0.25s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes stepReveal {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.caption-gen-step-label {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-ink-soft, #888);
+}
+
+.caption-gen-step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  font-weight: 900;
+  color: var(--color-paper);
+  background-color: var(--color-ink);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ---------- Chip row ---------- */
+
+.caption-gen-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.caption-gen-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 14px;
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  border-radius: var(--radius-sm, 8px);
+  border: 2px solid var(--color-ink);
+  background: transparent;
+  color: var(--color-ink);
+  box-shadow: 2px 2px 0 var(--color-ink);
+  cursor: pointer;
+  transition: transform 0.12s, box-shadow 0.12s, background 0.12s, color 0.12s;
+  white-space: nowrap;
+}
+
+.caption-gen-chip:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 var(--color-ink);
+}
+
+.caption-gen-chip:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--color-ink);
+}
+
+.caption-gen-chip.is-active {
+  background-color: var(--color-ink);
+  color: var(--color-paper);
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--color-ink);
+}
+
+/* ---------- Generate button ---------- */
+
 .caption-gen-btn {
   position: relative;
   display: inline-flex;
@@ -57,6 +158,10 @@
   transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s, filter 0.15s;
 }
 
+.caption-gen-btn--full {
+  width: 100%;
+}
+
 .caption-gen-btn:hover:not(:disabled) {
   transform: translate(-2px, -2px);
   box-shadow: 5px 5px 0 var(--color-ink);
@@ -72,10 +177,6 @@
   cursor: not-allowed;
 }
 
-/* ---------- Soft-locked state (no image uploaded yet) ---------- */
-/* Button is still clickable so we can show the warning toast + shake
-   the upload box; visually styled to read as "not ready yet". */
-
 .caption-gen-btn.is-locked {
   opacity: 0.55;
   filter: saturate(0.65);
@@ -83,7 +184,6 @@
 }
 
 .caption-gen-btn.is-locked:hover:not(:disabled) {
-  /* Cancel the normal lift on hover — keep it visually "stuck". */
   transform: none;
   box-shadow: 3px 3px 0 var(--color-ink);
   filter: saturate(0.65) brightness(1);
@@ -119,18 +219,24 @@
   transform: translateX(-50%) translateY(0);
 }
 
+/* ---------- Hint ---------- */
+
 .caption-gen-hint {
   margin: 0;
   padding: 1rem;
   text-align: center;
-  font-size: 0.875rem;
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
   color: var(--color-ink-soft);
   background-color: var(--color-yellow-soft);
   border: 2.5px dashed var(--color-ink);
   border-radius: var(--radius-sm);
 }
 
-/* ---------- Error state ---------- */
+/* ---------- Error ---------- */
 
 .caption-gen-error {
   display: flex;
@@ -191,7 +297,7 @@
   .caption-gen-retry { width: 100%; }
 }
 
-/* ---------- Grid of suggestion cards ---------- */
+/* ---------- Results grid ---------- */
 
 .caption-gen-grid {
   display: grid;
@@ -203,3 +309,42 @@
 .caption-gen-grid > :nth-child(2) { animation-delay: 0.12s; }
 .caption-gen-grid > :nth-child(3) { animation-delay: 0.20s; }
 .caption-gen-grid > :nth-child(4) { animation-delay: 0.28s; }
+
+/* ---------- Step header (back button + label row) ---------- */
+
+.caption-gen-step-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.1rem;
+}
+
+.caption-gen-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-ink);
+  background: var(--color-yellow-soft, #fef9c3);
+  border: 2px solid var(--color-ink);
+  border-radius: var(--radius-sm);
+  box-shadow: 2px 2px 0 var(--color-ink);
+  cursor: pointer;
+  transition: transform 0.12s, box-shadow 0.12s;
+  white-space: nowrap;
+}
+
+.caption-gen-back:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 var(--color-ink);
+}
+
+.caption-gen-back:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--color-ink);
+}

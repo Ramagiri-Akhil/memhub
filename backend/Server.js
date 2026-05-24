@@ -52,40 +52,229 @@ const SYSTEM_PROMPT =
   "Analyze uploaded images carefully and generate highly funny meme captions matching the image context naturally.";
 
 const MODE_INSTRUCTIONS = {
-  Hyderabad:
-  "Use Hyderabadi slang, biryani jokes, local Hyderabad meme style and funny expressions.",
+  Telugu: `
+STRICT RULE:
+- Write ONLY in Romanized English text.
+- NEVER use Telugu script.
+- NEVER sound like AI.
+- Sound like a Telugu meme admin posting at 2 AM.
 
-Telugu:
-  "Generate Telugu meme captions using Telugu meme culture, dialogues like 'entra idi', 'rey', 'ayyoo', 'mass'.",
+FIRST:
+Analyze the image deeply:
+- What emotion is happening?
+- Is someone angry, embarrassed, shocked, lazy, overconfident, emotional, broke, awkward?
+- What Indian/Telugu real-life situation does this resemble?
 
-Hindi:
-  "Generate Hindi meme captions using Bollywood humor, Indian relatable jokes and desi sarcasm.",
-  Savage:
-    "Style: SAVAGE. Be brutal, roast-style, biting. Cutting honesty with no mercy.",
-  "Gen-Z":
-    "Style: GEN-Z. Use Gen-Z internet slang naturally (bestie, lowkey, no cap, real, slay, fr).",
-  "Dark Humor":
-    "Style: DARK HUMOR. Lean morbid, existential, gallows humor. Clever and dry.",
-  Nerd:
-    "Style: NERD. Reference programming, tech, sci-fi, D&D, math. Inside jokes for developers and geeks.",
-  Cinematic:
-    "Style: CINEMATIC. Dramatic, epic, movie-trailer voice. Big stakes, slow-motion energy.",
-};
+THEN:
+Convert that situation into Telugu meme culture.
 
-function getModeInstruction(mode) {
-  return MODE_INSTRUCTIONS[mode] || "";
+Style inspiration:
+- Brahmanandam reaction memes
+- Sunil confusion comedy
+- Ali overacting
+- Balayya overconfidence energy
+- Pawan Kalyan fan edits
+- Pushpa attitude
+- RRR mass hype
+- Middle-class Telugu family drama
+- Engineering college suffering
+- Hyderabad traffic rage
+- Placements & backlogs
+- Amma shouting after seeing marks
+
+Use slang naturally:
+"enti ra babu"
+"rey pichi"
+"ayyoo"
+"mass poya"
+"nakko"
+"cheppanu kada"
+"em chestunnav ra"
+"baigan"
+
+IMPORTANT:
+- Caption should feel like a REAL Telugu meme page.
+- Use short punchy lines.
+- Avoid setup-punchline AI jokes.
+- Make captions emotionally relatable.
+- Slight exaggeration is GOOD.
+- Use reaction-style humor.
+- Make it viral-caption style.
+
+BAD:
+"when your friend is late"
+
+GOOD:
+"attendance shortage unna confidence maatram Balayya level"
+
+GOOD:
+"amma: phone ivvu
+me: naa jeevitham kuda teesko amma"
+`,
+
+  Hyderabad: `
+STRICT RULE:
+- ONLY Romanized English.
+- Sound like Hyderabad Instagram meme pages.
+- Use Hyderabadi rhythm naturally.
+
+FIRST:
+Understand the image emotion and situation.
+
+THEN:
+Convert it into Hyderabad local humor.
+
+Style inspiration:
+- Old City vibes
+- Hostel boys
+- Cafe gossip
+- Biryani obsession
+- Salary finished in 2 days
+- Friends making fake plans
+- Hyderabad traffic
+- Auto anna fights
+- Shah Ghouse supremacy
+- Late-night chai scenes
+
+Use slang naturally:
+"kya scene hai miya"
+"nakko yaaro"
+"hau"
+"light le"
+"ek dum"
+"baigan"
+"kaiku tension lete"
+
+IMPORTANT:
+- Sound LOCAL.
+- Slight roasting is GOOD.
+- Feels like Hyderabad reels comment section.
+
+BAD:
+"bro forgot his wallet"
+
+GOOD:
+"biryani order karne tak nawab
+bill aate hi gareeb"
+`,
+
+  Hindi: `
+STRICT RULE:
+- ONLY Romanized Hindi/English.
+- NEVER use Devanagari.
+- Sound like Indian meme pages.
+
+FIRST:
+Analyze emotional context in image.
+
+THEN:
+Map it into Indian desi situations.
+
+Style inspiration:
+- CarryMinati roasting
+- BB ki Vines realism
+- Ashish Chanchlani exaggeration
+- Samay Raina sarcasm
+- Indian parents
+- Sharma ji comparison
+- UPSC depression
+- Engineering life
+- Relationship drama
+- Middle-class pain
+
+IMPORTANT:
+- Feel human.
+- Feel chaotic.
+- Sound like reels comments.
+
+BAD:
+"when exams are near"
+
+GOOD:
+"padhai itni ki laptop bhi bol diya
+bhai bas kar"
+`,
+
+  English: `
+STRICT RULE:
+- Pure English only.
+- Sound like Instagram meme pages.
+- No robotic AI humor.
+
+FIRST:
+Analyze image emotion deeply.
+
+THEN:
+Create meme captions based on:
+- awkwardness
+- confidence
+- emotional damage
+- overthinking
+- delusion
+- social anxiety
+- friendship chaos
+
+Style:
+- internet humor
+- reaction memes
+- relatable humor
+- Twitter humor
+- subtle sarcasm
+
+IMPORTANT:
+- Make it sound human.
+- Make it short.
+- Avoid generic captions.
+`,
+
+  Savage: `
+STYLE:
+Savage roasting.
+Emotionally damaging.
+Cocky confidence.
+Instagram roast-page energy.
+`,
+
+  "Gen-Z": `
+STYLE:
+TikTok + reels humor.
+Chaotic internet energy.
+Zoomer slang.
+Terminally online behavior.
+`,
+
+  "Dark Humor": `
+STYLE:
+Existential humor.
+Pain but funny.
+Dry sarcasm.
+Clever > offensive.
+`,
+
+  Nerd: `
+STYLE:
+Programmer suffering.
+Deadline memes.
+Debugging trauma.
+Stack Overflow dependency.
+`,
+
+  Cinematic: `
+STYLE:
+Epic trailer narration.
+Overdramatic emotions.
+Hero-entry energy.
+High stakes for stupid situations.
+`,
 }
 
-function buildUserPrompt(count, withImage, mode) {
+function buildUserPrompt(count, withImage) {
   const intro = withImage
     ? `Look at the image and generate ${count} meme recipes that reference what is shown. Pick templates, fonts, and colors that match the image's vibe.`
     : `Generate ${count} meme recipes.`;
 
-  const styleLine = getModeInstruction(mode);
-
   return (
     `${intro}\n\n` +
-    (styleLine ? `${styleLine}\n\n` : "") +
     `Available templates (pick the best fit for each recipe — vary across suggestions):\n` +
     `  - classic:      top + bottom Impact captions\n` +
     `  - headline:     single bold line at the top\n` +
@@ -151,8 +340,6 @@ function sanitizePositions(value) {
   return Object.keys(result).length > 0 ? result : null;
 }
 
-// Turns one raw suggestion from the LLM into a clean, validated recipe.
-// Returns null if the suggestion can't be salvaged.
 function normalizeSuggestion(raw) {
   if (!raw || typeof raw !== "object") return null;
 
@@ -202,8 +389,6 @@ function parseAIResponse(text) {
 
   const mood = normalizeMood(parsed.mood);
 
-  // Prefer the new "suggestions" array. Fall back to "captions" if an older
-  // response shape sneaks through (defensive — keep the route working).
   const rawList = Array.isArray(parsed.suggestions)
     ? parsed.suggestions
     : Array.isArray(parsed.captions)
@@ -222,26 +407,11 @@ function parseAIResponse(text) {
   return { mood, suggestions };
 }
 
-function buildUserMessage(count, image, mode) {
-  const text = buildUserPrompt(count, Boolean(image), mode);
-  if (image) {
-    return {
-      role: "user",
-      content: [
-        { type: "text", text },
-        { type: "image_url", image_url: { url: image } },
-      ],
-    };
-  }
-  return { role: "user", content: text };
-}
-
 async function uploadImageToImgbb(base64Image) {
   const base64Data = base64Image.includes(",")
     ? base64Image.split(",")[1]
     : base64Image;
 
-  // Convert to JPEG regardless of input format (avif, webp, png, etc.)
   const inputBuffer = Buffer.from(base64Data, "base64");
   const jpegBuffer = await sharp(inputBuffer).jpeg({ quality: 90 }).toBuffer();
   const jpegBase64 = jpegBuffer.toString("base64");
@@ -260,51 +430,174 @@ async function uploadImageToImgbb(base64Image) {
   return data.data.url;
 }
 
-async function generateRecipesFromAI(count, image, mode) {
+async function generateRecipesFromAI(count, image, language, style) {
   if (!process.env.GROQ_API_KEY) throw new Error("Missing GROQ_API_KEY");
 
-  const textPrompt =
-    buildUserPrompt(count, Boolean(image), mode) +
-    `\n\nIMPORTANT — Indian meme culture rules:
-- Reference real Indian situations: UPSC grind, engineering college, board exams,
-  Indian parents, jugaad, "log kya kahenge", chai, arranged marriage, power cuts,
-  cricket wins/losses, Bollywood dialogues, auto-rickshaw bargaining, hostel mess food.
-- Use Hinglish naturally: "bhai", "yaar", "arre", "bas kar", "kya scene hai",
-  "thoda adjust karo", "chill maar", "bindaas", "ekdum mast".
-- Telugu/Hyderabadi flavour: "entra", "rey", "ayyoo", "babu", "mass", "pataas".
-- Feel like real Indian meme pages: Sarcasm, Being Indian, Subtle Curry Traits.
-- Avoid generic western meme formats. Make it hurt or heal like only desi memes can.`;
+  const languageInstruction = MODE_INSTRUCTIONS[language] || "";
+  const styleInstruction    = MODE_INSTRUCTIONS[style]    || "";
 
-  let userContent;
+  let personContext = "";
 
+  // Step 1: Identify person in image first
   if (image) {
     const imageUrl = await uploadImageToImgbb(image);
     console.log("Image uploaded to imgbb:", imageUrl);
-    userContent = [
-      { type: "text", text: textPrompt },
-      { type: "image_url", image_url: { url: imageUrl } },
-    ];
-  } else {
-    userContent = textPrompt;
+
+    const detection = await groq.chat.completions.create({
+      model: "meta-llama/llama-4-scout-17b-16e-instruct",
+      messages: [
+        {
+          role: "user",
+          content: [
+            {
+              type: "text",
+text: `You are a meme-culture expert who knows Indian cinema, politics, sports, and internet culture deeply.
+
+Look at this image and identify EVERYTHING:
+
+PEOPLE: Try hard to recognize any person. Think about:
+- Indian politicians (Modi, Rahul Gandhi, Kejriwal, Yogi, Smriti Irani)
+- Telugu actors (Balayya, Pawan Kalyan, Mahesh Babu, Allu Arjun, Jr NTR, Chiranjeevi, Brahmanandam, Sunil, Ali, Venkatesh)
+- Bollywood (SRK, Salman, Aamir, Ranveer, Akshay, Kapil Sharma)
+- YouTubers (Dhruv Rathee, CarryMinati, BB Ki Vines, Triggered Insaan, Samay Raina)
+- Cricketers (Virat, Rohit, Dhoni, Bumrah)
+- Elon Musk, Trump, or any global figure
+
+EMOTION: What is the exact emotion? Not just "happy" — is it:
+"overconfident before disaster", "fake smile hiding pain", "caught doing something wrong",
+"trying too hard to look cool", "explaining something nobody asked", "judging silently"
+
+SITUATION: What Indian real-life situation does this remind you of?
+"engineer sending first PR", "student when teacher asks who didn't do homework",
+"guy at wedding pretending to know everyone", "when amma finds the report card"
+
+Return ONLY this JSON (no markdown, no extra text):
+{
+  "detected": true,
+  "name": "exact name or Unknown",
+  "known": true,
+  "profession": "actor/politician/youtuber/cricketer/etc",
+  "persona": "2-3 line description of their public image and what they're known/memed for",
+  "iconic_moments": ["specific thing they said or did that became a meme"],
+  "meme_angles": ["specific roast angle 1", "specific roast angle 2", "specific roast angle 3"],
+  "expression": "very specific expression description",
+  "situation": "specific Indian real-life situation this resembles",
+  "vibe": "one word energy"
+}`
+            },
+            { type: "image_url", image_url: { url: imageUrl } },
+          ],
+        },
+      ],
+      temperature: 0.3, // low temp for accurate identification
+    });
+
+    try {
+      const raw = detection.choices[0].message.content;
+      const cleaned = raw.replace(/```json/gi, "").replace(/```/g, "").trim();
+      const parsed = JSON.parse(cleaned.match(/\{[\s\S]*\}/)[0]);
+
+if (parsed.detected && parsed.known && parsed.name !== "Unknown") {
+  personContext = `
+=== PERSON IDENTIFIED: ${parsed.name} (${parsed.profession}) ===
+
+Who they are: ${parsed.persona}
+
+Their iconic meme moments: ${parsed.iconic_moments?.join(" | ")}
+
+Meme angles to USE (pick the most relevant):
+${parsed.meme_angles?.map((a, i) => `${i + 1}. ${a}`).join("\n")}
+
+Their expression right now: ${parsed.expression}
+Situation energy: ${parsed.situation}
+
+YOUR JOB:
+- At least 3 out of 4 captions MUST directly reference ${parsed.name} by name or their iconic moments.
+- Do NOT make generic captions that could apply to anyone.
+- If it's Balayya — use his overconfidence, "Power Star" energy, mass dialogues.
+- If it's Rahul Gandhi — zero check kare saar, Bharat Jodo, pappu energy.
+- If it's Modi — "Modi h toh mumkin h", 400 paar, Mann Ki Baat.
+- If it's Dhruv Rathee — German shepherd, "ghar ka khatha tha", propaganda expose.
+- If it's Brahmanandam — reaction face, comedy timing, "aa maaaaaaa".
+- If it's CarryMinati — roast mode, "tujhe kya" energy.
+- Make captions that ONLY make sense for ${parsed.name}. Not interchangeable.`;
+
+  console.log("Person detected:", parsed.name);
+
+} else if (parsed.detected) {
+  personContext = `
+=== UNKNOWN PERSON ===
+Expression: ${parsed.expression}
+Situation this resembles: ${parsed.situation}
+Vibe: ${parsed.vibe}
+
+YOUR JOB:
+- Build captions around this EXACT expression and situation.
+- Make it feel like the caption was written FOR this specific image.
+- NOT generic. Someone looking at this image should go "haan bhai exactly yahi ho raha hai".`;
+}
+    } catch (e) {
+      console.log("Person detection parse failed, skipping:", e.message);
+    }
+
+    // Step 2: Generate captions with person context
+   const textPrompt =
+  buildUserPrompt(count, true) +
+  (languageInstruction ? `\n\n${languageInstruction}` : "") +
+  (styleInstruction    ? `\n\n${styleInstruction}`    : "") +
+  (personContext       ? `\n\n${personContext}`        : "") +
+  `\n\n
+=== FINAL RULES — READ BEFORE GENERATING ===
+1. NO generic captions. "When you forget your homework" type captions = REJECTED.
+2. Every caption must feel written for THIS specific image.
+3. If a person was identified — NAME them or reference their iconic moment in EVERY caption.
+4. Sound like a real meme admin, NOT ChatGPT.
+5. Short. Punchy. Emotionally damaging or deeply relatable.
+6. The person seeing this should either laugh out loud or tag someone immediately.
+7. STRICTLY follow the language rule. Wrong language = FAILURE.
+=== NOW GENERATE. BE SPECIFIC. BE FUNNY. ===`;
+
+    const completion = await groq.chat.completions.create({
+      model: "meta-llama/llama-4-scout-17b-16e-instruct",
+      messages: [
+        { role: "system", content: SYSTEM_PROMPT },
+        {
+          role: "user",
+          content: [
+            { type: "text", text: textPrompt },
+            { type: "image_url", image_url: { url: imageUrl } },
+          ],
+        },
+      ],
+      temperature: 1,
+    });
+
+    return parseAIResponse(completion.choices[0].message.content);
   }
+
+  // No image — text only
+  const textPrompt =
+    buildUserPrompt(count, false) +
+    (languageInstruction ? `\n\n${languageInstruction}` : "") +
+    (styleInstruction    ? `\n\n${styleInstruction}`    : "") +
+    `\n\nCRITICAL: Every caption must strictly follow the language rule above. Mixing languages = failure.` +
+    `\n\nMake captions FUNNY like actual meme pages — comedian timing, unexpected punchlines.`;
 
   const completion = await groq.chat.completions.create({
     model: "meta-llama/llama-4-scout-17b-16e-instruct",
     messages: [
       { role: "system", content: SYSTEM_PROMPT },
-      { role: "user", content: userContent },
+      { role: "user", content: textPrompt },
     ],
     temperature: 1,
   });
 
-  const text = completion.choices[0].message.content;
-  return parseAIResponse(text);
+  return parseAIResponse(completion.choices[0].message.content);
 }
 // =====================================================================
 // IN-MEMORY MEME + REACTIONS STORE (hackathon mode — no database yet)
 // =====================================================================
 
-// Map<memeId, { id, data, reactions }>
 const memes = new Map();
 
 const REACTION_EMOJIS = ["😂", "🔥", "💀", "😮", "🤯"];
@@ -317,9 +610,6 @@ function createEmptyReactions() {
   return reactions;
 }
 
-// Get the meme entry if it exists, otherwise create a blank one with
-// zeroed reactions. Used both by HTTP routes and socket handlers so they
-// always operate on the same record.
 function getOrCreateMeme(id) {
   let meme = memes.get(id);
   if (!meme) {
@@ -333,59 +623,40 @@ app.get("/", (req, res) => {
   res.json({ message: "Backend running 🚀", memes: memes.size });
 });
 
-// Save meme data (called when the creator clicks Share Link).
 app.post("/memes", (req, res) => {
   const { id, ...data } = req.body || {};
   if (!id || typeof id !== "string") {
-    return res
-      .status(400)
-      .json({ success: false, message: "Missing meme id" });
+    return res.status(400).json({ success: false, message: "Missing meme id" });
   }
-
   const meme = getOrCreateMeme(id);
   meme.data = data;
-
   console.log(`Saved meme ${id}`);
   res.json({ success: true, id });
 });
 
-// Load meme data + current reactions (called by MemeViewer on mount).
 app.get("/memes/:id", (req, res) => {
   const meme = memes.get(req.params.id);
   if (!meme || !meme.data) {
-    return res
-      .status(404)
-      .json({ success: false, message: "Meme not found" });
+    return res.status(404).json({ success: false, message: "Meme not found" });
   }
-  res.json({
-    success: true,
-    data: meme.data,
-    reactions: meme.reactions,
-  });
+  res.json({ success: true, data: meme.data, reactions: meme.reactions });
 });
 
 app.post("/generate-captions", async (req, res) => {
   try {
-    const count = Number(req.body?.count) || 4;
-    const image = typeof req.body?.image === "string" ? req.body.image : null;
-    const mode = typeof req.body?.mode === "string" ? req.body.mode : null;
+    const count    = Number(req.body?.count) || 4;
+    const image    = typeof req.body?.image    === "string" ? req.body.image    : null;
+    const language = typeof req.body?.language === "string" ? req.body.language : null;
+    const style    = typeof req.body?.style    === "string" ? req.body.style    : null;
 
     console.log(
-      `Generating ${count} recipes (${image ? "image-aware" : "text-only"}, style: ${mode || "default"})`
+      `Generating ${count} recipes (${image ? "image-aware" : "text-only"}, language: ${language || "default"}, style: ${style || "default"})`
     );
 
-    const { suggestions, mood } = await generateRecipesFromAI(
-      count,
-      image,
-      mode
-    );
+    const { suggestions, mood } = await generateRecipesFromAI(count, image, language, style);
     console.log(`Returned ${suggestions.length} recipes, mood: ${mood}`);
 
-    res.json({
-      success: true,
-      mood,
-      suggestions,
-    });
+    res.json({ success: true, mood, suggestions });
   } catch (error) {
     console.error("generate-captions failed:", error.message);
     const apiError = error.response?.data?.error?.message;
@@ -406,7 +677,6 @@ const io = new SocketIOServer(server, {
   cors: { origin: "*", methods: ["GET", "POST"] },
 });
 
-// Count how many sockets are currently in a meme's room and broadcast it.
 function broadcastViewers(memeId) {
   const room = io.sockets.adapter.rooms.get(memeId);
   const count = room ? room.size : 0;
@@ -414,12 +684,9 @@ function broadcastViewers(memeId) {
 }
 
 io.on("connection", (socket) => {
-  // Client joins a meme room so it can receive live reaction updates.
   socket.on("join", (memeId) => {
     if (typeof memeId !== "string" || !memeId) return;
 
-    // If this socket was already watching a different meme, leave that
-    // room first and update its viewer count.
     const previousMemeId = socket.data.memeId;
     if (previousMemeId && previousMemeId !== memeId) {
       socket.leave(previousMemeId);
@@ -430,17 +697,10 @@ io.on("connection", (socket) => {
     const meme = getOrCreateMeme(memeId);
     socket.join(memeId);
 
-    // Send the current counts to the newcomer immediately.
-    socket.emit("reactions", {
-      memeId,
-      reactions: meme.reactions,
-    });
-
-    // Update viewer count for everyone in the room (including newcomer).
+    socket.emit("reactions", { memeId, reactions: meme.reactions });
     broadcastViewers(memeId);
   });
 
-  // Client clicked a reaction emoji.
   socket.on("react", (payload) => {
     if (!payload || typeof payload !== "object") return;
     const { memeId, emoji } = payload;
@@ -450,15 +710,9 @@ io.on("connection", (socket) => {
     const meme = getOrCreateMeme(memeId);
     meme.reactions[emoji] = (meme.reactions[emoji] || 0) + 1;
 
-    // Broadcast the new counts to every viewer in that meme's room.
-    io.to(memeId).emit("reactions", {
-      memeId,
-      reactions: meme.reactions,
-    });
+    io.to(memeId).emit("reactions", { memeId, reactions: meme.reactions });
   });
 
-  // When a socket disconnects, the room size drops by 1 — let everyone
-  // remaining in the room know.
   socket.on("disconnect", () => {
     const memeId = socket.data.memeId;
     if (memeId) broadcastViewers(memeId);
@@ -467,5 +721,4 @@ io.on("connection", (socket) => {
 
 server.listen(PORT, () => {
   console.log(`Server + Socket.IO running on port ${PORT}`);
-
 });

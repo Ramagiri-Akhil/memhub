@@ -50,8 +50,6 @@ function sanitizePositions(value) {
   return Object.keys(result).length > 0 ? result : null
 }
 
-// Defensive client-side validation — mirrors the backend so we never trust
-// what came over the wire. Returns null if the suggestion isn't usable.
 function normalizeSuggestion(raw) {
   if (!raw || typeof raw !== 'object') return null
 
@@ -70,7 +68,6 @@ function normalizeSuggestion(raw) {
 
   const color = isValidHex(raw.color) ? raw.color : null
 
-  // Styles can be a flat suggestion or a nested object. Accept either.
   const rawStyles =
     raw.styles && typeof raw.styles === 'object' ? raw.styles : raw
 
@@ -91,16 +88,15 @@ function normalizeSuggestion(raw) {
 export async function generateCaptions({
   count = 4,
   image = null,
-  mode = null,
+  language = null,  // 'Hindi' | 'Telugu' | 'Hyderabad' | 'English'
+  style = null,     // 'Savage' | 'Gen-Z' | 'Dark Humor' | 'Nerd' | 'Cinematic'
 } = {}) {
   try {
-    const res = await api.post('/generate-captions', { count, image, mode })
+    const res = await api.post('/generate-captions', { count, image, language, style })
     console.log('[aiService] response data:', res.data)
 
     const data = res.data
 
-    // Prefer suggestions; fall back to a flat captions array if the server
-    // is still on the old shape.
     const rawList = Array.isArray(data?.suggestions)
       ? data.suggestions
       : Array.isArray(data?.captions)

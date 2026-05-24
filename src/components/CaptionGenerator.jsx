@@ -1,28 +1,52 @@
 import { useState } from 'react'
 import { generateCaptions } from '../services/aiService'
 import LoadingAnimation from './LoadingAnimation'
-import MemeModeSelector from './MemeModeSelector'
 import MemeSuggestionCard from './MemeSuggestionCard'
 import './CaptionGenerator.css'
 
-const MEME_MODES = ['Savage', 'Gen-Z', 'Dark Humor', 'Nerd', 'Cinematic']
+const LANGUAGES = [
+  { id: 'Hindi',     label: '🇮🇳 Hindi' },
+  { id: 'Telugu',    label: '🌶️ Telugu' },
+  { id: 'Hyderabad', label: '🍗 Hyderabadi' },
+  { id: 'English',   label: '🌐 English' },
+]
+
+const STYLES = [
+  { id: 'Savage',     label: '🔥 Savage' },
+  { id: 'Gen-Z',      label: '✨ Gen-Z' },
+  { id: 'Dark Humor', label: '💀 Dark' },
+  { id: 'Nerd',       label: '🤓 Nerd' },
+  { id: 'Cinematic',  label: '🎬 Cinematic' },
+]
 
 function CaptionGenerator({ onApply, onMoodChange, onValidationFail, image }) {
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState('')
+  const [isLoading, setIsLoading]     = useState(false)
+  const [error, setError]             = useState('')
   const [suggestions, setSuggestions] = useState([])
-  const [mode, setMode] = useState(MEME_MODES[0])
+  const [language, setLanguage]       = useState(null)  // null = step 1
+  const [style, setStyle]             = useState(null)  // null = step 2
 
   const isLocked = !image
 
-  async function handleGenerate() {
+  // Step 1 → Step 2
+  function handleLanguageSelect(id) {
+    setLanguage(id)
+    setStyle(null)
+    setSuggestions([])
+    setError('')
+  }
+
+  // Back to Step 1
+  function handleBack() {
+    setLanguage(null)
+    setStyle(null)
+    setSuggestions([])
+    setError('')
+  }
+
+  async function handleGenerate(selectedStyle) {
     if (isLoading) return
-    // No image yet → bail out before any API call and let the parent
-    // surface a playful warning + shake the upload box.
-    if (isLocked) {
-      onValidationFail?.()
-      return
-    }
+    if (isLocked) { onValidationFail?.(); return }
 
     setIsLoading(true)
     setError('')
@@ -30,10 +54,11 @@ function CaptionGenerator({ onApply, onMoodChange, onValidationFail, image }) {
       const { suggestions: results, mood } = await generateCaptions({
         count: 4,
         image,
-        mode,
+        language,
+        style: selectedStyle,
       })
       setSuggestions(results)
-      if (onMoodChange) onMoodChange(mood)
+      onMoodChange?.(mood)
     } catch (err) {
       setError(err.message || 'Something went wrong. Please try again.')
     } finally {
@@ -41,8 +66,17 @@ function CaptionGenerator({ onApply, onMoodChange, onValidationFail, image }) {
     }
   }
 
+  function handleStyleSelect(id) {
+    setStyle(id)
+    setSuggestions([])
+    setError('')
+    handleGenerate(id)
+  }
+
   return (
     <section className="caption-gen">
+
+      {/* Header */}
       <div className="caption-gen-header">
         <h2 className="caption-gen-title">
           <span className="caption-gen-icon" aria-hidden="true">
@@ -53,27 +87,55 @@ function CaptionGenerator({ onApply, onMoodChange, onValidationFail, image }) {
           </span>
           AI Caption Ideas
         </h2>
-
-        <button
-          type="button"
-          className={`caption-gen-btn ${isLocked ? 'is-locked' : ''}`}
-          onClick={handleGenerate}
-          disabled={isLoading}
-          aria-disabled={isLocked}
-        >
-          {isLoading ? 'Generating…' : 'Generate Funny Captions'}
-          {isLocked && !isLoading && (
-            <span className="caption-gen-btn-tooltip" aria-hidden="true">
-              Upload an image to unlock meme magic ✨
-            </span>
-          )}
-        </button>
       </div>
 
-      <MemeModeSelector modes={MEME_MODES} value={mode} onChange={setMode} />
+      {/* STEP 1 — Language */}
+      {!language && (
+        <div className="caption-gen-step caption-gen-step--reveal">
+          <p className="caption-gen-step-label">Pick a Language</p>
+          <div className="caption-gen-chip-row">
+            {LANGUAGES.map(({ id, label }) => (
+              <button
+                key={id}
+                type="button"
+                className="caption-gen-chip"
+                onClick={() => handleLanguageSelect(id)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
+      {/* STEP 2 — Style (language selected, not yet generating) */}
+      {language && !isLoading && (
+        <div className="caption-gen-step caption-gen-step--reveal">
+          <div className="caption-gen-step-header">
+            <button type="button" className="caption-gen-back" onClick={handleBack}>
+              ← {LANGUAGES.find(l => l.id === language)?.label}
+            </button>
+            <p className="caption-gen-step-label">Pick a Style</p>
+          </div>
+          <div className="caption-gen-chip-row">
+            {STYLES.map(({ id, label }) => (
+              <button
+                key={id}
+                type="button"
+                className={`caption-gen-chip ${style === id ? 'is-active' : ''}`}
+                onClick={() => handleStyleSelect(id)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Loading */}
       {isLoading && <LoadingAnimation />}
 
+      {/* Error */}
       {!isLoading && error && (
         <div className="caption-gen-error" role="alert">
           <span className="caption-gen-error-icon" aria-hidden="true">
@@ -87,33 +149,28 @@ function CaptionGenerator({ onApply, onMoodChange, onValidationFail, image }) {
             <p className="caption-gen-error-title">Couldn't generate captions</p>
             <p className="caption-gen-error-message">{error}</p>
           </div>
-          <button
-            type="button"
-            className="caption-gen-retry"
-            onClick={handleGenerate}
-          >
+          <button type="button" className="caption-gen-retry" onClick={() => handleGenerate(style)}>
             Retry
           </button>
         </div>
       )}
 
+      {/* Results */}
       {!isLoading && !error && suggestions.length > 0 && (
         <div className="caption-gen-grid">
           {suggestions.map((s, i) => (
-            <MemeSuggestionCard
-              key={i}
-              suggestion={s}
-              onClick={onApply}
-            />
+            <MemeSuggestionCard key={i} suggestion={s} onClick={onApply} />
           ))}
         </div>
       )}
 
-      {!isLoading && !error && suggestions.length === 0 && (
+      {/* Hint — only on step 1 */}
+      {!language && (
         <p className="caption-gen-hint">
-          Pick a style above and tap the button to get AI meme previews.
+          Pick a language to get started 👆
         </p>
       )}
+
     </section>
   )
 }
