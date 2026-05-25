@@ -29,8 +29,7 @@ const DEFAULT_CAPTION_SIZE = 36
 
 // Canonical app URL used when generating shareable meme links so the copied
 // URL always points to the deployed app, even when generated from local dev.
-const SITE_URL =
-  'https://memhub-git-main-akhilramagiri3-gmailcoms-projects.vercel.app'
+const SITE_URL = window.location.origin
 
 // Tries the modern Clipboard API first; falls back to an off-screen
 // <textarea> + execCommand('copy') for older browsers / insecure contexts.
